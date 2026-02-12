@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Share with All</title>
+    <style>
+      :root {
+        --bg: #0f1220;
+        --panel: #151a2d;
+        --panel-2: #10152a;
+        --text: #e8eaf6;
+        --muted: #a7b0d0;
+        --primary: #7c5cff;
+        --primary-2: #5b8cff;
+        --border: #242a44;
+        --ok: #38d39f;
+        --warn: #ffb020;
+        --danger: #ff5c7a;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--text);
+        background: radial-gradient(1200px 800px at 20% -10%, #2b2f54 0%, transparent 60%),
+                    radial-gradient(1200px 800px at 120% 10%, #1b2447 0%, transparent 60%),
+                    var(--bg);
+      }
+      .app {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 0;
+      }
+      .column {
+        padding: 24px 28px;
+        overflow: auto;
+      }
+      .left { border-right: 1px solid var(--border); }
+      h1 {
+        margin: 0 0 18px 0;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+        font-weight: 700;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .input {
+        width: 100%;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        padding: 10px 14px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+      .input:focus {
+        border-color: color-mix(in srgb, var(--primary) 60%, white 10%);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 25%, transparent 75%);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .textarea {
+        width: 100%;
+        min-height: 52vh;
+        resize: vertical;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--panel), var(--panel-2));
+        color: var(--text);
+        padding: 14px 16px;
+        line-height: 1.5;
+        font-size: 15px;
+        outline: none;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        border: 1px solid var(--border);
+        background: #0f1427;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: transform 80ms ease, background 160ms ease, border-color 160ms ease;
+      }
+      .btn:hover { background: #121939; }
+      .btn:active { transform: translateY(1px); }
+      .btn.primary {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--primary) 92%, white 8%),
+          color-mix(in srgb, var(--primary-2) 92%, black 8%)
+        );
+        border-color: color-mix(in srgb, var(--primary) 65%, transparent);
+        box-shadow: 0 10px 22px rgba(124, 92, 255, 0.28);
+      }
+      .btn.primary:hover {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--primary) 96%, white 4%),
+          color-mix(in srgb, var(--primary-2) 96%, black 4%)
+        );
+        border-color: color-mix(in srgb, var(--primary) 75%, transparent);
+      }
+      .btn.primary:active { transform: translateY(1px); box-shadow: 0 6px 16px rgba(124, 92, 255, 0.24); }
+      .btn.small {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+      /* Right Column */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+      .card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+        min-height: 120px;
+      }
+      .card h3 {
+        margin: 0 0 6px 0;
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .card pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: break-word;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        margin-left: 6px;
+        border-radius: 999px;
+        background: rgba(124,92,255,0.18);
+        border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+        color: var(--text);
+        font-size: 12px;
+      }
+      .hint {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      /* Rolling credit banner */
+      .roll-banner {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        height: 44px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--panel), var(--panel-2));
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        width: auto;
+        transition: box-shadow 160ms ease;
+        z-index: 50;
+        cursor: default;
+      }
+      .roll-tab {
+        width: auto;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1;
+        padding: 0 12px;
+      }
+      .roll-text {
+        width: 0;
+        padding: 0;
+        overflow: visible;
+        white-space: nowrap;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: width 260ms cubic-bezier(.2,.8,.2,1), padding 200ms ease, opacity 200ms ease 80ms, transform 220ms ease 80ms;
+      }
+      .roll-banner.open .roll-text {
+        width: 280px;
+        padding: 0 14px 0 10px;
+        opacity: 1;
+        transform: translateX(0);
+      }
+      /* Mobile view switcher */
+      .mobile-switch {
+        display: none;
+      }
+      .mobile-only {
+        display: none;
+      }
+      @media (max-width: 980px) {
+        .app { grid-template-columns: 1fr; }
+        .left { border-right: none; border-bottom: 1px solid var(--border); }
+        .cards { grid-template-columns: 1fr; }
+        .right { display: none; }
+        body.m-show-right .right { display: block; }
+        body.m-show-right .left { display: none; }
+        .mobile-only { display: inline-block; }
+        .roll-banner { cursor: pointer; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app" role="main">
+      <section class="column left">
+        <h1>Share all - Share any text with your classmates</h1>
+        <div class="row" style="margin-bottom: 16px;">
+          <label for="rollNoInput">Enter your roll number</label>
+          <input id="rollNoInput" class="input" type="text" placeholder="e.g. 123" inputmode="numeric" autocomplete="off" />
+        </div>
+        <div class="row">
+          <label for="pasteArea">Paste anything</label>
+          <textarea id="pasteArea" class="textarea" placeholder="Start typing or paste any text..."></textarea>
+          <div class="actions">
+            <button id="clearBtn" class="btn">Clear</button>
+            <button id="uploadBtn" class="btn primary">Upload</button>
+            <button id="openSharedBtnInline" class="btn primary mobile-only">Shared texts →</button>
+          </div>
+        </div>
+      </section>
+      <section class="column right">
+        <div class="actions mobile-only" style="margin-bottom:10px;">
+          <button id="closeSharedBtnInline" class="btn"><- Back</button>
+        </div>
+        <label>Shared texts (from all users)</label>
+        <div id="otherCards" class="cards"></div>
+        <div id="otherEmpty" class="hint">
+          No shared texts yet. Press Upload to share yours. Open another tab of this page to see updates sync live.
+        </div>
+      </section>
+    </main>
+    <div class="roll-banner" aria-label="Credits" title="Credits" id="aboutBanner">
+      <div class="roll-tab">About Dev</div>
+      <div class="roll-text">Made by Ayush Vishwakarma with ☕ + ❤️</div>
+    </div>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+      import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+      import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics.js';
+      import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, query, orderBy, onSnapshot, limit } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+      (function () {
+        const EXPIRY_MS = 5 * 60 * 1000;
+        const rollNoInput = document.getElementById('rollNoInput');
+        const pasteArea = document.getElementById('pasteArea');
+        const clearBtn = document.getElementById('clearBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const otherCards = document.getElementById('otherCards');
+        const otherEmpty = document.getElementById('otherEmpty');
+        const savedRoll = localStorage.getItem('ui.rollNo');
+        const savedText = localStorage.getItem('ui.text');
+        if (savedRoll) rollNoInput.value = savedRoll;
+        if (savedText) pasteArea.value = savedText;
+        function sanitizeRollNo(value) {
+          return (value || '')
+            .replace(/[^\p{L}\p{N}\-\s]/gu, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        }
+        function updateRollNo() {
+          const cleaned = sanitizeRollNo(rollNoInput.value);
+          rollNoInput.value = cleaned;
+          localStorage.setItem('ui.rollNo', cleaned);
+        }
+        function updateText() {
+          localStorage.setItem('ui.text', pasteArea.value);
+        }
+        function escapeHtml(str) {
+          return (str || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;');
+        }
+        function renderOtherUsers(list) {
+          otherCards.innerHTML = '';
+          if (!list || list.length === 0) {
+            otherEmpty.style.display = 'block';
+            return;
+          }
+          otherEmpty.style.display = 'none';
+          list
+            .slice()
+            .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+            .forEach(item => {
+              const article = document.createElement('article');
+              article.className = 'card';
+              const h3 = document.createElement('h3');
+              h3.innerHTML = 'Roll no.<span class="tag">' + escapeHtml(item.rollNo || 'N/A') + '</span>';
+              const pre = document.createElement('pre');
+              pre.innerHTML = escapeHtml(item.text || '');
+              const exp = document.createElement('div');
+              const expireAt = item.expireAt || ((item.ts || 0) + EXPIRY_MS);
+              exp.className = 'hint';
+              exp.setAttribute('data-exp', String(expireAt));
+              exp.textContent = 'expires in ' + formatRemaining(expireAt - Date.now());
+              const toolbar = document.createElement('div');
+              toolbar.className = 'toolbar';
+              const copyBtn = document.createElement('button');
+              copyBtn.className = 'btn small';
+              copyBtn.setAttribute('data-copy', '');
+              copyBtn.textContent = 'Copy';
+              toolbar.appendChild(copyBtn);
+              article.appendChild(h3);
+              article.appendChild(pre);
+              article.appendChild(toolbar);
+              article.appendChild(exp);
+              otherCards.appendChild(article);
+            });
+        }
+        const firebaseConfig = {
+          apiKey: 'AIzaSyB3I7C5MtmNYvx0ahqHPBd8bSkseYcBWPI',
+          authDomain: 'shareall-4a410.firebaseapp.com',
+          projectId: 'shareall-4a410',
+          storageBucket: 'shareall-4a410.firebasestorage.app',
+          messagingSenderId: '954047403784',
+          appId: '1:954047403784:web:ca40ceef5ecfb853c3febd'
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+        try {
+          const auth = getAuth(app);
+          signInAnonymously(auth).catch((err) => console.warn('Anonymous sign-in failed', err));
+        } catch (_) { /* ignore */ }
+        const postsRef = collection(db, 'posts');
+        const postsQuery = query(postsRef, orderBy('ts', 'desc'), limit(200));
+        let latestItems = [];
+        onSnapshot(postsQuery, (snapshot) => {
+          const now = Date.now();
+          latestItems = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const tsMs = data.ts?.toMillis ? data.ts.toMillis() : (typeof data.ts === 'number' ? data.ts : 0);
+            const expMs = data.expireAt?.toMillis ? data.expireAt.toMillis() : (tsMs ? tsMs + EXPIRY_MS : 0);
+            return { rollNo: data.rollNo || 'N/A', text: data.text || '', ts: tsMs, expireAt: expMs };
+          });
+          const visible = latestItems.filter(x => (x.expireAt || 0) > now);
+          renderOtherUsers(visible);
+        }, (err) => {
+          console.error('Firestore listener error', err);
+          otherEmpty.style.display = 'block';
+          otherEmpty.textContent = 'Unable to load shared texts. Please add your Firebase config in the script.';
+        });
+        function formatRemaining(ms) {
+          const remain = Math.max(0, Math.floor(ms / 1000));
+          const m = Math.floor(remain / 60).toString().padStart(1, '0');
+          const s = (remain % 60).toString().padStart(2, '0');
+          return m + ':' + s;
+        }
+        function tickCountdown() {
+          const nodes = otherCards.querySelectorAll('[data-exp]');
+          let anyExpiredNow = false;
+          nodes.forEach(node => {
+            const exp = Number(node.getAttribute('data-exp')) || 0;
+            const diff = exp - Date.now();
+            if (diff <= 0) {
+              anyExpiredNow = true;
+            } else {
+              node.textContent = 'expires in ' + formatRemaining(diff);
+            }
+          });
+          if (anyExpiredNow) {
+            const visible = (latestItems || []).filter(x => (x.expireAt || 0) > Date.now());
+            renderOtherUsers(visible);
+          }
+        }
+        rollNoInput.addEventListener('input', updateRollNo);
+        pasteArea.addEventListener('input', updateText);
+        clearBtn.addEventListener('click', () => {
+          if (!pasteArea.value) return;
+          const ok = confirm('Clear the text?');
+          if (ok) {
+            pasteArea.value = '';
+            updateText();
+          }
+        });
+        uploadBtn.addEventListener('click', async () => {
+          const roll = sanitizeRollNo(rollNoInput.value);
+          const text = (pasteArea.value || '').trim();
+          if (!roll) return alert('Please enter your roll number first.');
+          if (!text) return alert('Please paste some text to upload.');
+          try {
+            await addDoc(postsRef, {
+              rollNo: roll,
+              text,
+              ts: serverTimestamp(),
+              expireAt: Timestamp.fromDate(new Date(Date.now() + EXPIRY_MS))
+            });
+          } catch (e) {
+            alert('Upload failed. Check your internet connection and Firebase config.');
+          }
+        });
+        otherCards.addEventListener('click', async (ev) => {
+          const btn = ev.target.closest('button[data-copy]');
+          if (!btn) return;
+          const card = btn.closest('.card');
+          const text = (card?.querySelector('pre')?.textContent) || '';
+          try {
+            await navigator.clipboard.writeText(text);
+            const previous = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = previous || 'Copy'; }, 900);
+          } catch (err) {
+            alert('Copy failed. Select the text and press Ctrl+C.');
+          }
+        });
+        updateRollNo();
+        updateText();
+        setInterval(tickCountdown, 1000);
+        const openSharedBtnInline = document.getElementById('openSharedBtnInline');
+        const closeSharedBtnInline = document.getElementById('closeSharedBtnInline');
+        function openSharedView() {
+          document.body.classList.add('m-show-right');
+        }
+        openSharedBtnInline?.addEventListener('click', openSharedView);
+        closeSharedBtnInline?.addEventListener('click', () => {
+          document.body.classList.remove('m-show-right');
+        });
+        const aboutBanner = document.getElementById('aboutBanner');
+        const prefersHover = window.matchMedia('(hover: hover)').matches;
+        // Mobile: click to toggle (fixed)
+        if (!prefersHover && aboutBanner) {
+          const mobileQuery = window.matchMedia('(max-width: 980px)');
+          let isOpen = false;
+          aboutBanner.addEventListener('click', () => {
+            if (mobileQuery.matches) {
+              isOpen = !isOpen;
+              aboutBanner.classList.toggle('open', isOpen);
+            }
+          });
+          mobileQuery.addEventListener('change', e => {
+            if (!e.matches) {
+              isOpen = false;
+              aboutBanner.classList.remove('open');
+            }
+          });
+        }
+        // Desktop: hover to open/close
+        else if (prefersHover && aboutBanner) {
+          aboutBanner.addEventListener('mouseenter', () => {
+            aboutBanner.classList.add('open');
+          });
+          aboutBanner.addEventListener('mouseleave', () => {
+            aboutBanner.classList.remove('open');
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
